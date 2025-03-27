@@ -59,9 +59,6 @@ pipeline {
     }
 
     post {
-        always { 
-            deleteDir()
-        }
         success {
             echo 'Deployment to Tomcat container successful!'
         }
