@@ -7,7 +7,7 @@ services:
     ports:
       - "8081:8080"
     volumes:
-      - ./webapps:/usr/local/tomcat/webapps 
+      - ./webapps:/usr/local/tomcat/webapps  # This is where Tomcat serves from
     networks:
       - tomcat-net
 
@@ -17,7 +17,8 @@ services:
     networks:
       - tomcat-net
     volumes:
-      - ./:/app  # Assuming the project directory is in ./app
+      - ./:/app  # Mount the current directory to /app
+      - ./webapps:/usr/local/tomcat/webapps  # Mount the same webapps directory for Maven to use
     working_dir: /app
 
 networks:
