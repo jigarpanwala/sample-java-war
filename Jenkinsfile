@@ -5,12 +5,12 @@ pipeline {
         MAVEN_IMAGE = 'maven:3.8-openjdk-11'   // Maven Docker image
         TOMCAT_IMAGE = 'tomcat:9-jdk11-openjdk'  // Tomcat Docker image
         WAR_FILE_PATH = './target/hello-1.0.war'  // Correct path to your WAR file
+        TOMCAT_CONTAINER = 'tomcat-server'  // Tomcat container name
     }
 
     stages {
         stage('Checkout') {
             steps {
-                // Checkout the code from Git repository
                 echo "Checking out ${env.BRANCH_NAME}"
                 checkout scm
             }
@@ -20,15 +20,26 @@ pipeline {
             steps {
                 script {
                     echo 'Building WAR file with Maven using Docker'
-                    // Enable BuildKit if it's not already enabled
-                    
                     
                     // Build the WAR file using Maven inside the Maven container
                     sh """
                         docker build -f Dockerfile.maven -t maven-build .
-                        docker run --rm -v \$(pwd)/target:/app/target maven-build mvn package
+                        docker run --rm -v \$(pwd)/target:/app/target maven-build mvn clean package
                     """
+                }
+            }
+        }
 
+        stage('Stop and Remove Existing Tomcat Container') {
+            steps {
+                script {
+                    echo 'Stopping and removing any existing Tomcat container'
+                    
+                    // Stop and remove any running Tomcat container
+                    sh """
+                        docker ps -q -f name=${TOMCAT_CONTAINER} | xargs -r docker stop
+                        docker ps -aq -f name=${TOMCAT_CONTAINER} | xargs -r docker rm
+                    """
                 }
             }
         }
@@ -38,20 +49,14 @@ pipeline {
                 script {
                     echo 'Deploying WAR to Tomcat container'
 
-                    // Stop and remove any existing tomcat-server container
+                    // Run the Tomcat container with the latest WAR file
                     sh """
-                        docker ps -q -f name=tomcat-server | xargs -r docker stop
-                        docker ps -aq -f name=tomcat-server | xargs -r docker rm
+                        docker run -d --name ${TOMCAT_CONTAINER} -v \$(pwd)/webapps:/usr/local/tomcat/webapps -p 8081:8080 ${TOMCAT_IMAGE}
                     """
 
-                    // Run a new Tomcat container
+                    // Ensure WAR file is copied correctly into the Tomcat webapps directory
                     sh """
-                        docker run -d --name tomcat-server -v \$(pwd)/webapps:/usr/local/tomcat/webapps -p 8081:8080 ${TOMCAT_IMAGE}
-                    """
-
-                    // Copy the WAR file into the Tomcat container's webapps directory
-                    sh """
-                        docker cp ${WAR_FILE_PATH} tomcat-server:/usr/local/tomcat/webapps/
+                        docker cp ${WAR_FILE_PATH} ${TOMCAT_CONTAINER}:/usr/local/tomcat/webapps/
                     """
                 }
             }
@@ -62,7 +67,7 @@ pipeline {
                 script {
                     echo 'Restarting Tomcat container to load the new WAR'
                     // Restart Tomcat container to pick up the new WAR file
-                    sh 'docker restart tomcat-server'
+                    sh 'docker restart ${TOMCAT_CONTAINER}'
                 }
             }
         }
