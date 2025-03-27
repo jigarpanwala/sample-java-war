@@ -1,0 +1,10 @@
+# Dockerfile.tomcat
+FROM tomcat:9-jdk11-openjdk
+
+# Set the working directory to Tomcat's webapps folder
+WORKDIR /usr/local/tomcat/webapps
+
+# Expose Tomcat's port
+EXPOSE 8080
+
+# We will copy the WAR file from the host system's ./webapps directory into the container during runtime
