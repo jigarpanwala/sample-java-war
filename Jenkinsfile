@@ -34,7 +34,13 @@ pipeline {
                 script {
                     echo 'Deploying WAR to Tomcat container'
 
-                    // Run Tomcat container
+                    // Stop and remove any existing tomcat-server container
+                    sh """
+                        docker ps -q -f name=tomcat-server | xargs -r docker stop
+                        docker ps -aq -f name=tomcat-server | xargs -r docker rm
+                    """
+
+                    // Run a new Tomcat container
                     sh """
                         docker run -d --name tomcat-server -v \$(pwd)/webapps:/usr/local/tomcat/webapps -p 8081:8080 ${TOMCAT_IMAGE}
                     """
