@@ -59,6 +59,9 @@ pipeline {
     }
 
     post {
+        always { 
+            cleanWs()
+        }
         success {
             echo 'Deployment to Tomcat container successful!'
         }
