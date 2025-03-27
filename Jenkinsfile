@@ -28,11 +28,7 @@ pipeline {
                         docker build -f Dockerfile.maven -t maven-build .
                         docker run --rm -v \$(pwd)/target:/app/target maven-build mvn package
                     """
-#                    sh """
-#                        sh DOCKER_CLI_EXPERIMENTAL=enabled docker buildx create --use
-#                        docker buildx build -f Dockerfile.maven -t maven-build .
-#                        docker run --rm -v \$(pwd)/target:/app/target maven-build mvn package
-#                    """
+
                 }
             }
         }
