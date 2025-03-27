@@ -20,9 +20,16 @@ pipeline {
             steps {
                 script {
                     echo 'Building WAR file with Maven using Docker'
+                    // Enable BuildKit if it's not already enabled
+                    sh 'DOCKER_CLI_EXPERIMENTAL=enabled docker buildx create --use'
+                    
                     // Build the WAR file using Maven inside the Maven container
+#                    sh """
+#                        docker build -f Dockerfile.maven -t maven-build .
+#                        docker run --rm -v \$(pwd)/target:/app/target maven-build mvn package
+#                    """
                     sh """
-                        docker build -f Dockerfile.maven -t maven-build .
+                        docker buildx build -f Dockerfile.maven -t maven-build .
                         docker run --rm -v \$(pwd)/target:/app/target maven-build mvn package
                     """
                 }
