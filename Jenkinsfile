@@ -21,8 +21,8 @@ pipeline {
             steps {
                 script {
                     echo 'Building WAR file with Maven'
-                    // Build the Maven project to generate the WAR file
-                    sh 'docker-compose run --rm maven mvn clean package -DskipTests'  // Run Maven inside the maven container
+                    // Build the Maven project to generate the WAR file and place it directly in ./webapps
+                    sh 'docker-compose run --rm maven mvn clean package -DskipTests'  // WAR will be in ./webapps
                 }
             }
         }
@@ -30,14 +30,8 @@ pipeline {
         stage('Deploy to Tomcat') {
             steps {
                 script {
-                    // Assuming the WAR file is in the target/ directory after build
-                    def warFile = findFiles(glob: '**/target/*.war')[0].path
-                    echo "Deploying ${warFile} to Tomcat container"
-
-                    // Copy the WAR file to the Tomcat container
-                    sh """
-                        docker cp ${warFile} ${TOMCAT_CONTAINER}:/usr/local/tomcat/webapps/
-                    """
+                    // Since the WAR is directly written to ./webapps, Tomcat will automatically pick it up
+                    echo 'No need to deploy manually, WAR file is already in webapps'
                 }
             }
         }
