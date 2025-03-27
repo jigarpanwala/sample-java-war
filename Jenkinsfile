@@ -60,7 +60,7 @@ pipeline {
 
     post {
         always { 
-            cleanWs()
+            deleteDir()
         }
         success {
             echo 'Deployment to Tomcat container successful!'
