@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  tomcat:
+    image: tomcat:9-jdk11-openjdk
+    container_name: tomcat-server
+    ports:
+      - "8081:8080"
+    volumes:
+      - ./webapps:/usr/local/tomcat/webapps 
+    networks:
+      - tomcat-net
+
+  maven:
+    image: maven:3.8-openjdk-11
+    container_name: maven-build
+    networks:
+      - tomcat-net
+    volumes:
+      - ./:/app  # Assuming the project directory is in ./app
+    working_dir: /app
+
+networks:
+  tomcat-net:
+    driver: bridge
