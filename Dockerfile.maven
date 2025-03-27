@@ -1,0 +1,11 @@
+# Dockerfile.maven
+FROM maven:3.8-openjdk-11
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Copy the Maven project files (pom.xml and others) into the container
+COPY . /app
+
+# Run Maven to build the project (WAR file will be placed in /app/target)
+RUN mvn clean package -DskipTests
