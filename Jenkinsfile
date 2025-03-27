@@ -4,7 +4,7 @@ pipeline {
     environment {
         MAVEN_IMAGE = 'maven:3.8-openjdk-11'   // Maven Docker image
         TOMCAT_IMAGE = 'tomcat:9-jdk11-openjdk'  // Tomcat Docker image
-        WAR_FILE_PATH = './target/hello-1.0.war'  // Path to the WAR file after Maven build
+        WAR_FILE_PATH = './target/hello-1.0.war'  // Correct path to your WAR file
     }
 
     stages {
@@ -23,7 +23,7 @@ pipeline {
                     // Build the WAR file using Maven inside the Maven container
                     sh """
                         docker build -f Dockerfile.maven -t maven-build .
-                        docker run --rm -v \$(pwd)/target:/app/target maven-build
+                        docker run --rm -v \$(pwd)/target:/app/target maven-build mvn clean package
                     """
                 }
             }
@@ -51,7 +51,7 @@ pipeline {
             steps {
                 script {
                     echo 'Restarting Tomcat container to load the new WAR'
-                    // Restart Tomcat container to apply the new WAR
+                    // Restart Tomcat container to pick up the new WAR file
                     sh 'docker restart tomcat-server'
                 }
             }
