@@ -2,10 +2,9 @@ pipeline {
     agent any
 
     environment {
-        // Docker Compose file path
-        COMPOSE_FILE = 'docker-compose.yml'
-        TOMCAT_CONTAINER = 'tomcat-server'  // Name of the Tomcat container
-        MAVEN_CONTAINER = 'maven-build'    // Name of the Maven container
+        MAVEN_IMAGE = 'maven:3.8-openjdk-11'   // Maven Docker image
+        TOMCAT_IMAGE = 'tomcat:9-jdk11-openjdk'  // Tomcat Docker image
+        WAR_FILE_PATH = './target/hello-1.0.war'  // Path to the WAR file after Maven build
     }
 
     stages {
@@ -20,9 +19,12 @@ pipeline {
         stage('Build WAR') {
             steps {
                 script {
-                    echo 'Building WAR file with Maven'
-                    // Build the Maven project to generate the WAR file and place it directly in ./webapps
-                    sh 'docker-compose run --rm maven mvn clean package -DskipTests'  // WAR will be in ./webapps
+                    echo 'Building WAR file with Maven using Docker'
+                    // Build the WAR file using Maven inside the Maven container
+                    sh """
+                        docker build -f Dockerfile.maven -t maven-build .
+                        docker run --rm -v \$(pwd)/target:/app/target maven-build
+                    """
                 }
             }
         }
@@ -30,18 +32,27 @@ pipeline {
         stage('Deploy to Tomcat') {
             steps {
                 script {
-                    // Since the WAR is directly written to ./webapps, Tomcat will automatically pick it up
-                    echo 'No need to deploy manually, WAR file is already in webapps'
+                    echo 'Deploying WAR to Tomcat container'
+
+                    // Run Tomcat container
+                    sh """
+                        docker run -d --name tomcat-server -v \$(pwd)/webapps:/usr/local/tomcat/webapps -p 8081:8080 ${TOMCAT_IMAGE}
+                    """
+
+                    // Copy the WAR file into the Tomcat container's webapps directory
+                    sh """
+                        docker cp ${WAR_FILE_PATH} tomcat-server:/usr/local/tomcat/webapps/
+                    """
                 }
             }
         }
 
-        stage('Restart Tomcat Container') {
+        stage('Restart Tomcat') {
             steps {
                 script {
-                    // Restart Tomcat container to pick up the new WAR file
-                    echo 'Restarting Tomcat container'
-                    sh "docker restart ${TOMCAT_CONTAINER}"
+                    echo 'Restarting Tomcat container to load the new WAR'
+                    // Restart Tomcat container to apply the new WAR
+                    sh 'docker restart tomcat-server'
                 }
             }
         }
