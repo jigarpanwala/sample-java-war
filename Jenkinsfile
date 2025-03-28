@@ -20,7 +20,7 @@ pipeline {
                         ls
                         pwd
                         sudo -u ubuntu -i bash -c '
-                         minikube kubectl -- apply -f deployment.yaml '
+                         minikube kubectl -- apply -f /var/lib/jenkins/workspace/Tomcat-JAVA-CICD_Deploy_K8s/deployment.yaml '
 
                     """
                 }
