@@ -18,6 +18,7 @@ pipeline {
                         docker build -t tomcat:${env.BUILD_NUMBER} .
                         alias kubectl="minikube kubectl --"
                         sed -i 's|image: tomcat:latest|image: tomcat:${env.BUILD_NUMBER}|g' deployment.yaml
+                        cp deployment.yaml /home/ubuntu
                         sudo -u ubuntu -i bash -c '
                              minikube kubectl -- apply -f deployment.yaml '
 
