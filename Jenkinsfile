@@ -15,10 +15,11 @@ pipeline {
             steps {
                 script {
                     sh """
-                        sudo -u ubuntu -i bash -c '
-                        docker build -t tomcat:${env.BUILD_NUMBER} .;
-                        sed -i 's|image: tomcat:latest|image: tomcat:${env.BUILD_NUMBER}|g' deployment.yaml;
-                        minikube kubectl -- apply -f deployment.yaml '
+                        docker build -t tomcat:${env.BUILD_NUMBER} .
+                        sed -i 's|image: tomcat:latest|image: tomcat:${env.BUILD_NUMBER}|g' deployment.yaml
+                        ls
+                        pwd
+                        minikube kubectl -- apply -f deployment.yaml
 
                     """
                 }
