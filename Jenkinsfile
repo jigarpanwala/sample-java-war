@@ -8,12 +8,6 @@ pipeline {
     }
 
     stages {
-        stage('Clean Workspace') {
-            steps {
-                echo 'Cleaning workspace before running the pipeline...'
-                deleteDir() // This command removes all files from the workspace
-            }
-        }
         
         stage('Checkout') {
             steps {
@@ -45,7 +39,7 @@ pipeline {
                     """
 
                     sh """
-                        docker run -d --name tomcat-server -v \$(pwd)/webapps:/usr/local/tomcat/webapps -p 8081:8080 ${TOMCAT_IMAGE}
+                        docker run -d --name tomcat-server -v /home/ubuntu/webapps:/usr/local/tomcat/webapps -p 8081:8080 ${TOMCAT_IMAGE}
                     """
 
                     sh """
@@ -66,6 +60,10 @@ pipeline {
     }
 
     post {
+        always {
+            echo 'Cleaning up the workspace...'
+            cleanWs()  // This will clean the workspace after the pipeline run
+        }
         success {
             echo 'Deployment to Tomcat container successful!'
         }
