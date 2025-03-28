@@ -19,7 +19,7 @@ pipeline {
                         alias kubectl="minikube kubectl --"
                         sed -i 's|image: tomcat:latest|image: tomcat:${env.BUILD_NUMBER}|g' deployment.yaml
                         sudo -u ubuntu -i bash -c '
-                             kubectl apply -f deployment.yaml '
+                             minikube kubectl -- apply -f deployment.yaml '
 
                     """
                 }
