@@ -32,3 +32,4 @@ spec:
       port: 8080
       targetPort: 8080
       nodePort: 8083
+  type: NodePort    
