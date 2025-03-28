@@ -17,6 +17,7 @@ pipeline {
                     sh """
                     # Build Docker image with Jenkins build number
                     docker build -t tomcat:${env.BUILD_NUMBER} .
+                    docker push jigarpanwala/tomcat:${env.BUILD_NUMBER}
 
                     # Update the deployment.yaml file to use the new image tag
                     sed -i "s|image: tomcat:latest|image: tomcat:${env.BUILD_NUMBER}|g" deployment.yaml
