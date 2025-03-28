@@ -16,20 +16,21 @@ spec:
     spec:
       containers:
       - name: tomcat
-        image: tomcat:latest
+        image: tomcat
         ports:
         - containerPort: 8080
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: tomcat-service
+  labels:
+    app: tomcat
+  name: tomcat-deployment
 spec:
-  selector:
-    app.kubernetes.io/name: tomcat
   ports:
-    - protocol: TCP
-      port: 8080
-      targetPort: 8080
-      nodePort: 30000
-  type: NodePort    
+  - port: 8083
+    protocol: TCP
+    targetPort: 8083
+  selector:
+    app: tomcat
+  type: nodePort
