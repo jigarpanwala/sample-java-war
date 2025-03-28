@@ -30,10 +30,6 @@ pipeline {
     }
 
     post {
-        always {
-            echo 'Cleaning up the workspace...'
-            #cleanWs()  // This will clean the workspace after the pipeline run
-        }
         success {
             echo 'Deployment to Tomcat container successful!'
         }
