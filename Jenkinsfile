@@ -17,6 +17,7 @@ pipeline {
                         docker build -t tomcat:${env.BUILD_NUMBER} .
                         alias kubectl="minikube kubectl --"
                         sed -i 's|image: tomcat:latest|image: tomcat:${env.BUILD_NUMBER}|g' deployment.yaml
+                        kubectl apply -f deployment.yaml
                     """
                 }
             }
