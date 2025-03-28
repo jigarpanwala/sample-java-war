@@ -26,7 +26,7 @@ pipeline {
                     pwd
 
                     # Apply the deployment.yaml using minikube's kubectl as the 'ubuntu' user
-                    sudo -u ubuntu -i bash -c 'minikube kubectl -- apply -f /var/lib/jenkins/workspace/${JOB_NAME}/deployment.yaml'
+                    sudo -u ubuntu -i bash -c 'minikube kubectl -- apply -f /var/lib/jenkins/workspace/Tomcat-JAVA-CICD_Deploy_K8s_2/deployment.yaml'
                     """
                 }
             }
