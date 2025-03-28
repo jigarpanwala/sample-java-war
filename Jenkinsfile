@@ -6,10 +6,8 @@ pipeline {
         stage('Checkout') {
             steps {
                 echo "Checking out ${env.BRANCH_NAME}"
-                sh """
-                sudo -u ubuntu -i bash -c '
-                checkout scm '
-                """
+                checkout scm
+                
             }
         }
 
