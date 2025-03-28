@@ -12,11 +12,10 @@ pipeline {
 
         stage('Build Docker Container') {
             steps {
-                def imageTag = "tomcat:${env.BUILD_NUMBER}"
                 script {
                     sh """
-                        docker build -t ${imageTag} .
-                        docker run -d -p 8082:8080 ${imageTag}
+                        docker build -t tomcat:${env.BUILD_NUMBER} .
+                        docker run -d -p 8082:8080 tomcat:${env.BUILD_NUMBER}
                     """
                 }
             }
