@@ -19,7 +19,8 @@ pipeline {
                         sed -i 's|image: tomcat:latest|image: tomcat:${env.BUILD_NUMBER}|g' deployment.yaml
                         ls
                         pwd
-                        minikube kubectl -- apply -f deployment.yaml
+                        sudo -u ubuntu -i bash -c '
+                         minikube kubectl -- apply -f deployment.yaml '
 
                     """
                 }
@@ -31,7 +32,7 @@ pipeline {
     post {
         always {
             echo 'Cleaning up the workspace...'
-            cleanWs()  // This will clean the workspace after the pipeline run
+            #cleanWs()  // This will clean the workspace after the pipeline run
         }
         success {
             echo 'Deployment to Tomcat container successful!'
