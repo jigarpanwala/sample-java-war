@@ -6,7 +6,14 @@ pipeline {
         TOMCAT_IMAGE = 'tomcat:9-jdk11-openjdk'     // Tomcat Docker image
         WAR_FILE_PATH = './target/hello-1.0.war'    // Path to your WAR file
     }
-
+    stages {
+        stage('Clean Workspace') {
+            steps {
+                echo 'Cleaning workspace before running the pipeline...'
+                deleteDir() // This command removes all files from the workspace
+            }
+        }
+        
     stages {
         stage('Checkout') {
             steps {
